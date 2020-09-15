@@ -2,6 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<name>JPA demo app</name>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -11,19 +14,28 @@
 	<groupId>com.example</groupId>
 	<artifactId>jpa-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jpa-demo</name>
 	<description>Demo project for Spring Boot and Jpa</description>
 
 	<properties>
 		<java.version>11</java.version>
+		<springfox-swagger.version>2.9.2</springfox-swagger.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -41,6 +53,16 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${springfox-swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${springfox-swagger.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -51,15 +73,79 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<db.url>jdbc:postgresql://localhost:5432/jpa-demo</db.url>
+				<db.username>postgres</db.username>
+				<db.password>jpa-demo</db.password>
+			</properties>
+		</profile>
+		<profile>
+			<id>docker</id>
+			<properties>
+				<db.url>jdbc:postgresql://db:5432/jpa-demo</db.url>
+				<db.username>postgres</db.username>
+				<db.password>jpa-demo</db.password>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>3.4.2</version>
+				<configuration>
+					<propertyFileWillOverride>true</propertyFileWillOverride>
+					<propertyFile>target/classes/liquibase.properties</propertyFile>
+				</configuration>
+				<goals>
+					<goal>update</goal>
+				</goals>
+			</plugin>
+			<!-- display active profile in compile phase -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-help-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>show-profiles</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>active-profiles</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>

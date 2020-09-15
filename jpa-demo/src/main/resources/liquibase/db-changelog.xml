@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<changeSet id="drop" author="st3venrose">
+		<sqlFile path="dml/drop-tables.sql" relativeToChangelogFile="true" splitStatements="true" stripComments="true" />
+	</changeSet>
+
+	<changeSet id="init-dml" author="st3venrose" runAlways="true">
+		<sqlFile path="dml/create-tables.sql" relativeToChangelogFile="true" />
+	</changeSet>
+
+	<changeSet id="init-ddl" author="st3venrose" runAlways="true">
+		<sqlFile path="ddl/insert-records.sql" relativeToChangelogFile="true" />
+	</changeSet>
+
+</databaseChangeLog>
