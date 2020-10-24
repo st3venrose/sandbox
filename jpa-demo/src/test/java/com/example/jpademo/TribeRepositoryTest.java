@@ -55,7 +55,7 @@ public class TribeRepositoryTest {
 	@Test
 	@Sql("/test-data.sql")
 	public void listTribeTest() {
-		Tribe foundedTribe = tribeRepository.getOne(ID_1);
+		Tribe foundedTribe = tribeRepository.findById(ID_1).get();
 
 		assertNotNull(foundedTribe);
 		assertEquals(TRIBE_NAME, foundedTribe.getName());
@@ -63,20 +63,5 @@ public class TribeRepositoryTest {
 		assertEquals(2, foundedTribe.getSquads().get(0).getMembers().size());
 		assertEquals(ID_1, foundedTribe.getSquads().get(0).getMembers().get(0).getId());
 		assertEquals(ID_2, foundedTribe.getSquads().get(0).getMembers().get(1).getId());
-	}
-
-	@Test
-	public void saveTribeAndGetBackTest() {
-		Tribe savedTribe = tribeRepository.save(tribe);
-
-		assertNotNull(savedTribe);
-		assertEquals(TRIBE_NAME, savedTribe.getName());
-		assertEquals(2, savedTribe.getSquads().size());
-		assertEquals(2, savedTribe.getSquads().get(0).getMembers().size());
-
-		Tribe foundedTribe = tribeRepository.getOne(savedTribe.getId());
-
-		assertEquals(2, foundedTribe.getSquads().size());
-		assertEquals(2, foundedTribe.getSquads().get(0).getMembers().size());
 	}
 }
